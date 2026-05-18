@@ -1,40 +1,66 @@
 # 🏋️ FitCoach
 
-*Your AI gym buddy that sees what you eat, understands how you train, and talks to you about it.*
+**AI Fitness & Nutrition Analyst with Voice Coaching**
+
+Snap your food, log your workout, get coached by AI. FitCoach uses Xiaomi MiMo's multimodal vision to analyze meals from photos, reasoning engine to track progress patterns, and TTS to deliver daily voice briefings — like having a personal trainer in your pocket.
+
+![Architecture](https://img.shields.io/badge/Architecture-Agent--first-blue)
+![Features](https://img.shields.io/badge/Features-Voice_%2B_Vision-green)
+![Model](https://img.shields.io/badge/Powered_by-MiMo_V2.5-orange)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
 ---
 
-## Why I Built This
+## What It Does
 
-I kept failing at tracking my nutrition. Every fitness app I tried felt like a spreadsheet with a camera — snap a photo, manually adjust portion sizes, guess at ingredients, repeat. I'd quit within 10 days. Every. Single. Time.
+1. **📸 Snap** — photograph your meal
+2. **🏋️ Log** — describe your workout in plain text
+3. **🔊 Listen** — receive a voice briefing with insights, suggestions, and encouragement
 
-So I asked: what if tracking felt like texting a friend who happens to know everything about nutrition?
-
-That's FitCoach. You send a photo of your food, it tells you what's in it. You describe your workout in one sentence, it logs everything. And once a day, it sends you a voice message with coaching — like a personal trainer checking in, except it costs nothing and never judges your 2am snacks.
+No calorie counting. No barcode scanning. Just photos, text, and voice.
 
 ## How It Works
 
-**Step 1: Snap your meal** → Send a food photo via Telegram. MiMo Vision identifies the dish, estimates portions, and breaks down macros (calories, protein, carbs, fat, fiber).
+- Food photo → MiMo Vision identifies dishes, estimates portions, calculates macros
+- Workout text → MiMo parses exercises, sets, reps, weight, estimates calories burned
+- Daily digest → MiMo TTS generates personalized voice coaching with progress highlights and actionable tips
+- All data stored in SQLite — meals, workouts, goals, trends
 
-**Step 2: Log your workout** → Type something like "push day, bench 4x8 @60kg, cable fly 3x12". MiMo parses exercises, tracks volume, and estimates calories burned.
+## Features
 
-**Step 3: Listen to your coach** → Every morning, get a voice briefing covering yesterday's nutrition, workout progress, and what to focus on today.
+### 📸 Food Photo Analysis
+- Snap a photo → MiMo Vision identifies dishes, estimates portions, calculates macros
+- Tracks calories, protein, carbs, fat, fiber
+- Recognizes cuisines from around the world
+- Flags nutritional imbalances
 
-No calorie databases. No barcode scanning. No manual data entry. Just photos, text, and voice.
+### 🏋️ Workout Logging
+- Describe workouts in plain text: "ran 5km in 25 min" or "push day, 4x10 bench press"
+- MiMo parses exercise type, duration, sets, reps, weight
+- Estimates calories burned
+- Tracks progressive overload
 
-## What's Under the Hood
+### 🔊 Voice Coaching
+- Daily audio briefing: nutrition summary, workout suggestions, progress update
+- Personalized tips based on your patterns
+- Motivational nudges when you're off-track
+- Listen on the go — no app needed
 
-Everything runs through a single MiMo-V2.5-Pro instance that handles:
+### 📊 Progress Tracking
+- Weekly/monthly trends for weight, body measurements, macros
+- Pattern detection: "You tend to skip protein on weekdays"
+- Goal setting and adjustment
+- Visual progress charts (Telegram delivery)
 
-- **Vision** — food photo analysis: dish identification, portion estimation, macro calculation
-- **Reasoning** — pattern detection across meals and workouts, personalized suggestions, goal tracking
-- **TTS** — natural voice coaching briefings delivered as Telegram voice messages
+### 💬 Conversational Interface
+- Chat naturally via Telegram
+- Ask questions: "How was my protein this week?"
+- Get suggestions: "What should I eat for dinner?"
+- Voice replies for hands-free interaction
 
-The data layer is SQLite — simple, portable, zero-config. Meals, workouts, goals, and trends are all persisted locally.
+## Usage Examples
 
-## Demo Conversations
-
-**Food photo → instant breakdown:**
+**Food Analysis**
 
 ```
 📸 [photo of nasi goreng with egg and chicken]
@@ -50,7 +76,7 @@ The data layer is SQLite — simple, portable, zero-config. Meals, workouts, goa
    yogurt or a protein shake as a snack.
 ```
 
-**Natural language workout logging:**
+**Workout Logging**
 
 ```
 🏋️ did chest and triceps. bench 4x8 @60kg, incline db
@@ -66,7 +92,7 @@ The data layer is SQLite — simple, portable, zero-config. Meals, workouts, goa
 📈 Bench volume +8% from last week — on track
 ```
 
-**Voice coaching (daily briefing):**
+**Voice Briefing**
 
 ```
 🔊 [0:42 voice message]
@@ -77,7 +103,7 @@ for 3 weeks straight. Today's a rest day, so focus on
 hydration and sleep. Tomorrow is legs — eat carbs tonight."
 ```
 
-## Getting Started
+## Quick Start
 
 ```bash
 git clone https://github.com/spengeboob/fitcoach.git
@@ -87,41 +113,78 @@ cp .env.example .env   # fill in your keys
 python -m fitcoach
 ```
 
-You'll need:
-- A Telegram bot token ([@BotFather](https://t.me/BotFather))
-- Xiaomi MiMo API key ([mimo.xiaomi.com](https://mimo.xiaomi.com/))
-- (Optional) Your height, weight, and fitness goals for personalized coaching
+## Configuration
 
-## Project Map
+```env
+# AI Engine (Xiaomi MiMo)
+MIMO_API_KEY=your_mimo_key
+
+# Telegram Bot
+TELEGRAM_BOT_TOKEN=your_bot_token
+TELEGRAM_CHAT_ID=your_chat_id
+
+# User Profile (optional, for personalized coaching)
+USER_WEIGHT_KG=70
+USER_HEIGHT_CM=175
+USER_AGE=28
+USER_GOAL=muscle_gain
+USER_ACTIVITY_LEVEL=moderate
+```
+
+## Project Structure
 
 ```
 fitcoach/
-├── agent.py              # main loop — routes input, calls MiMo, delivers output
-├── config.py             # env vars + user profile
+├── __init__.py
+├── __main__.py          # Entry point
+├── config.py            # Configuration
+├── agent.py             # Main agent loop
 ├── analyzers/
-│   ├── food.py           # MiMo Vision → dish ID + macro estimation
-│   ├── workout.py        # parse free-text workout descriptions
-│   └── progress.py       # trend detection + pattern recognition
+│   ├── __init__.py
+│   ├── food.py          # MiMo Vision food analysis
+│   ├── workout.py       # Workout parsing & tracking
+│   └── progress.py      # Progress analysis & patterns
 ├── delivery/
-│   ├── telegram.py       # text, photo, and voice message delivery
-│   └── voice.py          # MiMo TTS integration
+│   ├── __init__.py
+│   ├── telegram.py      # Telegram bot (text + photo + voice)
+│   └── voice.py         # MiMo TTS voice generation
 ├── utils/
-│   ├── database.py       # SQLite CRUD
-│   ├── nutrition.py      # USDA nutrition reference data
-│   └── formatting.py     # pretty-print macros and stats
-└── data/nutrition.db     # pre-built nutrition lookup table
+│   ├── __init__.py
+│   ├── database.py      # SQLite data layer
+│   ├── nutrition.py     # Nutrition database (USDA)
+│   └── formatting.py    # Output formatting
+├── data/
+│   └── nutrition.db     # Nutrition reference data
+├── requirements.txt
+├── .env.example
+└── README.md
 ```
 
-## What's Next
+## Why MiMo?
 
-- Body photo progress tracking (visual diffs over weeks)
-- Barcode scanning for packaged foods
-- Wearable integration (Apple Watch, Fitbit)
-- Meal planning with auto-generated grocery lists
-- Workout plan generation based on goals and history
+| Capability | FitCoach Use Case |
+|------------|-------------------|
+| **Vision** (Multimodal) | Food photo → dish identification, portion estimation, macro calculation |
+| **Reasoning** (MiMo-V2.5-Pro) | Pattern detection, progress analysis, personalized suggestions |
+| **TTS** | Daily voice coaching briefings, hands-free feedback |
+
+The combination of vision + reasoning + voice is unique to MiMo. Other models require separate services for each capability, adding latency and complexity.
+
+## Roadmap
+
+- [ ] Body photo progress tracking (visual diff over time)
+- [ ] Barcode scanning for packaged foods
+- [ ] Integration with wearable devices (Apple Watch, Fitbit)
+- [ ] Meal planning with grocery lists
+- [ ] Social features — share progress with friends
+- [ ] Workout plan generation based on goals
+
+## License
+
+MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-MIT License
-
-Built by [@spengeboob](https://github.com/spengeboob) · Powered by [Xiaomi MiMo](https://mimo.xiaomi.com/)
+<p align="center">
+  Built by an independent developer · Powered by <a href="https://mimo.xiaomi.com/">Xiaomi MiMo</a>
+</p>
